@@ -176,6 +176,7 @@ class AppActivity : M3Activity() {
                         viewModel.cancelledUpdate()
                     }
                 }
+
                 val conf = LocalConfiguration.current
                 val systemUiController = rememberSystemUiController()
                 LaunchedEffect(conf.orientation) {
