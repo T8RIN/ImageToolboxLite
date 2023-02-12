@@ -170,6 +170,7 @@ class AppActivity : M3Activity() {
                         viewModel.updateUris(null)
                     }
                 }
+                
                 LaunchedEffect(showUpdateSheet.value) {
                     if (!showUpdateSheet.value) {
                         delay(600)
