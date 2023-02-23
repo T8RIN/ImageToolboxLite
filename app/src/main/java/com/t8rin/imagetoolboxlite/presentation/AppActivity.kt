@@ -158,6 +158,7 @@ class AppActivity : M3Activity() {
                 val showUpdateSheet = rememberSaveable(viewModel.showUpdateDialog) {
                     mutableStateOf(viewModel.showUpdateDialog)
                 }
+
                 LaunchedEffect(settingsState) {
                     GlobalExceptionHandler.setAllowCollectCrashlytics(settingsState.allowCollectCrashlytics)
                     GlobalExceptionHandler.setAnalyticsCollectionEnabled(settingsState.allowCollectAnalytics)
@@ -170,7 +171,7 @@ class AppActivity : M3Activity() {
                         viewModel.updateUris(null)
                     }
                 }
-                
+
                 LaunchedEffect(showUpdateSheet.value) {
                     if (!showUpdateSheet.value) {
                         delay(600)
