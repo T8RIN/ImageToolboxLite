@@ -155,6 +155,7 @@ class AppActivity : M3Activity() {
                 val showSelectSheet = rememberSaveable(viewModel.showSelectDialog) {
                     mutableStateOf(viewModel.showSelectDialog)
                 }
+                
                 val showUpdateSheet = rememberSaveable(viewModel.showUpdateDialog) {
                     mutableStateOf(viewModel.showUpdateDialog)
                 }
