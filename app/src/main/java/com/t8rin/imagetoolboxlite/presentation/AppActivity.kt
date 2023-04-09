@@ -155,7 +155,7 @@ class AppActivity : M3Activity() {
                 val showSelectSheet = rememberSaveable(viewModel.showSelectDialog) {
                     mutableStateOf(viewModel.showSelectDialog)
                 }
-                
+
                 val showUpdateSheet = rememberSaveable(viewModel.showUpdateDialog) {
                     mutableStateOf(viewModel.showUpdateDialog)
                 }
@@ -243,6 +243,7 @@ class AppActivity : M3Activity() {
                     )
 
                     val confettiHostState = LocalConfettiHostState.current
+                    
                     AnimatedVisibility(settingsState.isConfettiEnabled) {
                         ConfettiHost(
                             hostState = confettiHostState,
