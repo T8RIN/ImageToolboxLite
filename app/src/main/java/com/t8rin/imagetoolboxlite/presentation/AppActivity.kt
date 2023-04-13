@@ -243,11 +243,12 @@ class AppActivity : M3Activity() {
                     )
 
                     val confettiHostState = LocalConfettiHostState.current
-                    
+
                     AnimatedVisibility(settingsState.isConfettiEnabled) {
                         ConfettiHost(
                             hostState = confettiHostState,
                             particles = { primary ->
+                                
                                 val particlesType by remember(settingsState.confettiType) {
                                     derivedStateOf {
                                         Particles.Type.entries.first {
