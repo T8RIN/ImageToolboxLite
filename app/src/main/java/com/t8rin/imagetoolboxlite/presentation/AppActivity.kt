@@ -248,7 +248,7 @@ class AppActivity : M3Activity() {
                         ConfettiHost(
                             hostState = confettiHostState,
                             particles = { primary ->
-                                
+
                                 val particlesType by remember(settingsState.confettiType) {
                                     derivedStateOf {
                                         Particles.Type.entries.first {
