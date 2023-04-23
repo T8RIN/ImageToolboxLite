@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.apache.org/licenses/LICENSE-2.0>.
  */
 
-@file:Suppress("UNCHECKED_CAST")
+
 
 package com.t8rin.imagetoolboxlite.feature.filters.data
 
@@ -43,7 +43,7 @@ internal class FavoriteFiltersInteractorImpl @Inject constructor(
 
     override suspend fun toggleFavorite(filter: Filter<Bitmap, *>) {
         val currentFilters = getFavoriteFilters().first()
-        
+
         if (currentFilters.filterIsInstance(filter::class.java).isEmpty()) {
             dataStore.edit { prefs ->
                 prefs[FAVORITE_FILTERS] = (currentFilters + filter).toDatastoreString()
