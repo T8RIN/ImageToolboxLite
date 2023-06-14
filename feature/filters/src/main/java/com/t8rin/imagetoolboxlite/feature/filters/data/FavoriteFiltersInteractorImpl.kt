@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.apache.org/licenses/LICENSE-2.0>.
  */
 
-
+@file:Suppress("UNCHECKED_CAST")
 
 package com.t8rin.imagetoolboxlite.feature.filters.data
 
