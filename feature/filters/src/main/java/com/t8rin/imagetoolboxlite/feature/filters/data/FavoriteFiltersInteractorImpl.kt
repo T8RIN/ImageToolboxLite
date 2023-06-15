@@ -43,7 +43,6 @@ internal class FavoriteFiltersInteractorImpl @Inject constructor(
 
     override suspend fun toggleFavorite(filter: Filter<Bitmap, *>) {
         val currentFilters = getFavoriteFilters().first()
-
         if (currentFilters.filterIsInstance(filter::class.java).isEmpty()) {
             dataStore.edit { prefs ->
                 prefs[FAVORITE_FILTERS] = (currentFilters + filter).toDatastoreString()
