@@ -41,7 +41,6 @@ internal class FavoriteFiltersInteractorImpl @Inject constructor(
         prefs[FAVORITE_FILTERS]?.toFiltersList() ?: emptyList()
     }
 
-
     override suspend fun toggleFavorite(filter: Filter<Bitmap, *>) {
         val currentFilters = getFavoriteFilters().first()
         if (currentFilters.filterIsInstance(filter::class.java).isEmpty()) {
