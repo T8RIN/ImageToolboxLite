@@ -92,6 +92,7 @@ class AppActivity : M3Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         
         parseImage(intent)
 
