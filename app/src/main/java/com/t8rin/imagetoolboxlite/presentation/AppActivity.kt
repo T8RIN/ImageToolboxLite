@@ -92,7 +92,7 @@ class AppActivity : M3Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        
+
         parseImage(intent)
 
         setContentWithWindowSizeClass {
@@ -189,6 +189,7 @@ class AppActivity : M3Activity() {
                             WindowInsetsControllerCompat.BEHAVIOR_DEFAULT
                     }
                 }
+                
                 ImageToolboxTheme {
                     val tiramisu = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
 
