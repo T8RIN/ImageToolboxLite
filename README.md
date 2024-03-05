@@ -33,11 +33,11 @@
   <a href="https://github.com/t8rin/imageresizer/releases/latest">
       <img src="https://img.shields.io/github/v/release/t8rin/imageresizer?color=purple&include_prereleases&logo=github&style=for-the-badge"/>
   </a>
-  <a href="https://play.google.com/store/apps/details?id=com.t8rin.imagetoolboxlite">
-      <img src="https://img.shields.io/endpoint?color=purple&logo=google-play&style=for-the-badge&label=Play%20store&url=https%3A%2F%2Fplay.cuzi.workers.dev%2Fplay%3Fi%3Dcom.t8rin.imagetoolboxlite%26l%3DAndroid%26m%3D%24version"/>
+  <a href="https://play.google.com/store/apps/details?id=ru.tech.imageresizershrinker">
+      <img src="https://img.shields.io/endpoint?color=purple&logo=google-play&style=for-the-badge&label=Play%20store&url=https%3A%2F%2Fplay.cuzi.workers.dev%2Fplay%3Fi%3Dru.tech.imageresizershrinker%26l%3DAndroid%26m%3D%24version"/>
   </a>
-  <a href="https://f-droid.org/packages/com.t8rin.imagetoolboxlite">
-      <img src="https://img.shields.io/f-droid/v/com.t8rin.imageresizershrinker?color=purple&include_prereleases&logo=FDROID&style=for-the-badge"/>
+  <a href="https://f-droid.org/packages/ru.tech.imageresizershrinker">
+      <img src="https://img.shields.io/f-droid/v/ru.tech.imageresizershrinker?color=purple&include_prereleases&logo=FDROID&style=for-the-badge"/>
   </a>
 </p>
 
@@ -90,8 +90,8 @@ or click one of the badges below.
 </br>
 
 <p align="middle">
-    <a href="https://play.google.com/store/apps/details?id=com.t8rin.imagetoolboxlite"><img alt="Google Play" src="./fastlane/metadata/android/en-US/images/buttons/gplay.svg" height="60"></a>
-    <a href="https://f-droid.org/packages/com.t8rin.imagetoolboxlite"><img alt="F-Droid" src="./fastlane/metadata/android/en-US/images/buttons/fdroid.svg" height="60"/></a>
+    <a href="https://play.google.com/store/apps/details?id=ru.tech.imageresizershrinker"><img alt="Google Play" src="./fastlane/metadata/android/en-US/images/buttons/gplay.svg" height="60"></a>
+    <a href="https://f-droid.org/packages/ru.tech.imageresizershrinker.imagetoolboxlite"><img alt="F-Droid" src="./fastlane/metadata/android/en-US/images/buttons/fdroid.svg" height="60"/></a>
     <a href="https://github.com/t8rin/imageresizer/releases/latest"><img alt="GitHub" src="./fastlane/metadata/android/en-US/images/buttons/github.svg" height="60"/></a>
 </p>
 </div>
