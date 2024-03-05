@@ -4,7 +4,7 @@
 
 </div>
 
-<h1 align="center">Image Toolbox</h1>
+<h1 align="center">Image Toolbox Lite</h1>
 
 </br>
 
