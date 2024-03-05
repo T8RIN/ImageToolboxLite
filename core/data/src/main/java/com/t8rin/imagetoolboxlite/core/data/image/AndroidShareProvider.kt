@@ -1,0 +1,201 @@
+/*
+ * ImageToolbox is an image editor for android
+ * Copyright (c) 2024 T8RIN (Malik Mukhametzyanov)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * You should have received a copy of the Apache License
+ * along with this program.  If not, see <http://www.apache.org/licenses/LICENSE-2.0>.
+ */
+
+package com.t8rin.imagetoolboxlite.core.data.image
+
+import android.content.Context
+import android.content.Intent
+import android.graphics.Bitmap
+import android.net.Uri
+import android.webkit.MimeTypeMap
+import androidx.core.content.FileProvider
+import androidx.core.net.toUri
+import androidx.exifinterface.media.ExifInterface
+import com.t8rin.logger.makeLog
+import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import com.t8rin.imagetoolboxlite.core.domain.image.ImageCompressor
+import com.t8rin.imagetoolboxlite.core.domain.image.ImageGetter
+import com.t8rin.imagetoolboxlite.core.domain.image.ShareProvider
+import com.t8rin.imagetoolboxlite.core.domain.model.ImageInfo
+import com.t8rin.imagetoolboxlite.core.domain.saving.FileController
+import com.t8rin.imagetoolboxlite.core.domain.saving.model.ImageSaveTarget
+import com.t8rin.imagetoolboxlite.core.resources.R
+import java.io.File
+import java.io.FileOutputStream
+import javax.inject.Inject
+
+internal class AndroidShareProvider @Inject constructor(
+    @ApplicationContext private val context: Context,
+    private val imageGetter: ImageGetter<Bitmap, ExifInterface>,
+    private val imageCompressor: ImageCompressor<Bitmap>,
+    private val fileController: FileController
+) : ShareProvider<Bitmap> {
+
+    override suspend fun shareImages(
+        uris: List<String>,
+        imageLoader: suspend (String) -> Pair<Bitmap, ImageInfo>?,
+        onProgressChange: (Int) -> Unit
+    ) = withContext(Dispatchers.IO) {
+        var cnt = 0
+        val uriList: MutableList<Uri> = mutableListOf()
+        uris.forEach { uri ->
+            imageLoader(uri)?.let { (image, imageInfo) ->
+                cacheImage(
+                    image = image,
+                    imageInfo = imageInfo
+                )?.let { uri ->
+                    cnt += 1
+                    uriList.add(uri.toUri())
+                }
+            }
+            onProgressChange(cnt)
+        }
+        onProgressChange(-1)
+        shareImageUris(uriList)
+    }
+
+    override suspend fun cacheImage(
+        image: Bitmap,
+        imageInfo: ImageInfo,
+        name: String
+    ): String? = withContext(Dispatchers.IO) {
+        val imagesFolder = File(context.cacheDir, "images")
+        return@withContext kotlin.runCatching {
+            imagesFolder.mkdirs()
+            val saveTarget = ImageSaveTarget<ExifInterface>(
+                imageInfo = imageInfo,
+                originalUri = "share",
+                sequenceNumber = null,
+                data = byteArrayOf()
+            )
+
+            val file = File(imagesFolder, fileController.constructImageFilename(saveTarget))
+            FileOutputStream(file).use {
+                it.write(imageCompressor.compressAndTransform(image, imageInfo))
+            }
+            FileProvider.getUriForFile(context, context.getString(R.string.file_provider), file)
+                .also {
+                    context.grantUriPermission(
+                        context.packageName,
+                        it,
+                        Intent.FLAG_GRANT_WRITE_URI_PERMISSION or Intent.FLAG_GRANT_READ_URI_PERMISSION
+                    )
+                }
+        }.getOrNull()?.toString()
+    }
+
+    override suspend fun shareImage(
+        imageInfo: ImageInfo,
+        image: Bitmap,
+        onComplete: () -> Unit,
+        name: String
+    ) = withContext(Dispatchers.IO) {
+        cacheImage(
+            image = image,
+            imageInfo = imageInfo
+        )?.let {
+            shareUri(
+                uri = it,
+                type = imageInfo.imageFormat.type
+            )
+        }
+        onComplete()
+    }
+
+    override suspend fun shareUri(
+        uri: String,
+        type: String?
+    ) {
+        val sendIntent = Intent(Intent.ACTION_SEND).apply {
+            putExtra(Intent.EXTRA_STREAM, uri.toUri())
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            this.type = type ?: MimeTypeMap.getSingleton()
+                .getMimeTypeFromExtension(
+                    imageGetter.getExtension(uri)
+                ) ?: "*/*"
+        }
+        val shareIntent = Intent.createChooser(sendIntent, context.getString(R.string.share))
+        shareIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        context.startActivity(shareIntent)
+    }
+
+    override suspend fun shareUris(
+        uris: List<String>
+    ) = shareImageUris(uris.map { it.toUri() })
+
+    private fun shareImageUris(uris: List<Uri>) {
+        if (uris.isEmpty()) return
+
+        val sendIntent = Intent(Intent.ACTION_SEND_MULTIPLE).apply {
+            putParcelableArrayListExtra(Intent.EXTRA_STREAM, ArrayList(uris))
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            type = MimeTypeMap.getSingleton()
+                .getMimeTypeFromExtension(
+                    imageGetter.getExtension(uris.first().toString())
+                ) ?: "*/*"
+        }
+        val shareIntent = Intent.createChooser(sendIntent, context.getString(R.string.share))
+        shareIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        context.startActivity(shareIntent)
+    }
+
+    override suspend fun cacheByteArray(
+        byteArray: ByteArray,
+        filename: String
+    ): String? {
+        val imagesFolder = File(context.cacheDir, "files")
+        return runCatching {
+            imagesFolder.mkdirs()
+            val file = File(imagesFolder, filename)
+            FileOutputStream(file).use {
+                it.write(byteArray)
+            }
+            FileProvider.getUriForFile(
+                context,
+                context.getString(R.string.file_provider),
+                file
+            )
+        }.onFailure {
+            it.makeLog()
+        }.getOrNull()?.toString()
+    }
+
+    override suspend fun shareByteArray(
+        byteArray: ByteArray,
+        filename: String,
+        onComplete: () -> Unit
+    ) = withContext(Dispatchers.IO) {
+        cacheByteArray(
+            byteArray = byteArray,
+            filename = filename
+        )?.let {
+            shareUri(
+                uri = it,
+                type = MimeTypeMap.getSingleton()
+                    .getMimeTypeFromExtension(
+                        imageGetter.getExtension(it)
+                    ) ?: "*/*"
+            )
+        }
+        onComplete()
+    }
+
+}

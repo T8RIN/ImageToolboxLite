@@ -1,0 +1,59 @@
+name: Android CI
+
+on:
+  push:
+    branches: [ "master" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'adopt'
+          cache: gradle
+
+      - run: bash ./gradlew assembleRelease
+      
+      - uses: iota9star/sign-android-release@v1.0.5
+        name: Sign FOSS APK
+        # ID used to access action output
+        id: sign_app_foss
+        with:
+          releaseDirectory: app/build/outputs/apk/foss/release
+          fileRex: .*apk
+          signingKeyBase64: ${{ secrets.SIGNING_KEY }}
+          alias: ${{ secrets.ALIAS }}
+          keyStorePassword: ${{ secrets.KEY_STORE_PASS }}
+          keyPassword: ${{ secrets.KEY_STORE_PASS }}
+        env:
+          BUILD_TOOLS_VERSION: "34.0.0"
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: Signed apks FOSS
+          path: app/build/outputs/apk/foss/release/*-signed.apk
+
+      - uses: iota9star/sign-android-release@v1.0.5
+        name: Sign Market APK
+        # ID used to access action output
+        id: sign_app_market
+        with:
+          releaseDirectory: app/build/outputs/apk/market/release
+          fileRex: .*apk
+          signingKeyBase64: ${{ secrets.SIGNING_KEY }}
+          alias: ${{ secrets.ALIAS }}
+          keyStorePassword: ${{ secrets.KEY_STORE_PASS }}
+          keyPassword: ${{ secrets.KEY_STORE_PASS }}
+        env:
+          BUILD_TOOLS_VERSION: "34.0.0"
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: Signed apks Market
+          path: app/build/outputs/apk/market/release/*-signed.apk

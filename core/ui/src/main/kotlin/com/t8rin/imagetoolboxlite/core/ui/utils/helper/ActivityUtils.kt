@@ -1,0 +1,107 @@
+/*
+ * ImageToolbox is an image editor for android
+ * Copyright (c) 2024 T8RIN (Malik Mukhametzyanov)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * You should have received a copy of the Apache License
+ * along with this program.  If not, see <http://www.apache.org/licenses/LICENSE-2.0>.
+ */
+
+package com.t8rin.imagetoolboxlite.core.ui.utils.helper
+
+import android.app.Activity
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.ErrorOutline
+import androidx.compose.material.icons.rounded.Save
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
+import com.t8rin.imagetoolboxlite.core.domain.saving.SaveResult
+import com.t8rin.imagetoolboxlite.core.resources.R
+import com.t8rin.imagetoolboxlite.core.ui.utils.helper.ContextUtils.requestStoragePermission
+import com.t8rin.imagetoolboxlite.core.ui.utils.helper.ReviewHandler.showReview
+import com.t8rin.imagetoolboxlite.core.ui.widget.other.ToastDuration
+import com.t8rin.imagetoolboxlite.core.ui.widget.other.ToastHostState
+
+fun Activity.failedToSaveImages(
+    scope: CoroutineScope,
+    results: List<SaveResult>,
+    toastHostState: ToastHostState,
+    savingPathString: String,
+    isOverwritten: Boolean,
+    showConfetti: () -> Unit
+) {
+    val failed = results.count { it is SaveResult.Error }
+    val done = results.count { it is SaveResult.Success }
+
+    if (results.any { it == SaveResult.Error.MissingPermissions }) requestStoragePermission()
+    else if (failed == 0) {
+        if (done == 1) {
+            scope.launch {
+                toastHostState.showToast(
+                    (results.first() as? SaveResult.Success)?.message ?: getString(
+                        R.string.saved_to_without_filename,
+                        savingPathString
+                    ),
+                    Icons.Rounded.Save
+                )
+            }
+        } else {
+            if (isOverwritten) {
+                scope.launch {
+                    toastHostState.showToast(
+                        getString(R.string.images_overwritten),
+                        Icons.Rounded.Save
+                    )
+                }
+            } else {
+                scope.launch {
+                    toastHostState.showToast(
+                        getString(
+                            R.string.saved_to_without_filename,
+                            savingPathString
+                        ),
+                        Icons.Rounded.Save
+                    )
+                }
+            }
+            showReview(this)
+            showConfetti()
+        }
+
+        showReview(this)
+        showConfetti()
+    } else if (failed < done) {
+        scope.launch {
+            showConfetti()
+            toastHostState.showToast(
+                (results.first { it is SaveResult.Success } as SaveResult.Success).message
+                    ?: getString(
+                        R.string.saved_to_without_filename,
+                        savingPathString
+                    ),
+                Icons.Rounded.Save
+            )
+            toastHostState.showToast(
+                getString(R.string.failed_to_save, failed),
+                Icons.Rounded.ErrorOutline,
+                ToastDuration.Long
+            )
+        }
+    } else {
+        scope.launch {
+            toastHostState.showToast(
+                getString(R.string.failed_to_save, failed),
+                Icons.Rounded.ErrorOutline,
+                ToastDuration.Long
+            )
+        }
+    }
+}
