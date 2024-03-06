@@ -9,7 +9,7 @@ versionCode = "1"
 jvmTarget = "17"
 compose-compiler = "1.5.10"
 
-composeVersion = "1.7.0-alpha03"
+composeVersion = "1.7.0-alpha04"
 androidx-datastorePreferencesAndroid = "1.1.0-beta01"
 appUpdateKtx = "2.1.0"
 appUpdate = "2.1.0"
