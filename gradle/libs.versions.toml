@@ -10,7 +10,7 @@ jvmTarget = "17"
 compose-compiler = "1.5.10"
 
 composeVersion = "1.7.0-alpha03"
-androidx-datastorePreferencesAndroid = "1.1.0-beta01"
+androidx-datastorePreferencesAndroid = "1.1.1"
 appUpdateKtx = "2.1.0"
 appUpdate = "2.1.0"
 shadowGadgets = "2.1.0"
