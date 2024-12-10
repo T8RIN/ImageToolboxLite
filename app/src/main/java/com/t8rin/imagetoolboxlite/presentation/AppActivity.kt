@@ -85,6 +85,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class AppActivity : M3Activity() {
 
+
     private val viewModel by viewModels<MainViewModel>()
 
     @Inject
