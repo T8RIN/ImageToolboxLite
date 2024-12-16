@@ -86,6 +86,7 @@ import javax.inject.Inject
 class AppActivity : M3Activity() {
 
     private val viewModel by viewModels<MainViewModel>()
+
     
     @Inject
     lateinit var favoriteFiltersInteractor: FavoriteFiltersInteractor<Bitmap>
